@@ -18,7 +18,7 @@ options = Options()
 # options.add_argument('--ignore-certificate-errors')
 # options.add_argument('--allow-running-insecure-content')
 
-service = ChromeService(executable_path = "/usr/bin/chromedriver")
+service = ChromeService(executable_path = "/Users/minjae/Downloads/landcrawling_test/chromedriver")
 driver = webdriver.Chrome(service=service, options=options)
 driver.get(sit_url)
 time.sleep(1)
