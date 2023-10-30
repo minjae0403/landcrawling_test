@@ -1,8 +1,10 @@
 import selenium, time
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service as ChromeService
 
-sit_url = "https://http://rtdown.molit.go.kr/"
+
+sit_url = "https://rtdown.molit.go.kr/"
 
 options = Options()
 
@@ -16,7 +18,8 @@ options = Options()
 # options.add_argument('--ignore-certificate-errors')
 # options.add_argument('--allow-running-insecure-content')
 
-driver = webdriver.Chrome(options=options)
+service = ChromeService(executable_path = "/usr/bin/chromedriver")
+driver = webdriver.Chrome(service=service, options=options)
 driver.get(sit_url)
 time.sleep(1)
 
