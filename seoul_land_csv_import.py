@@ -27,7 +27,7 @@ db_engine = create_engine(f'mysql+pymysql://{db_user}:{db_password}@{db_host}/{d
 Base = declarative_base()
 class User(Base):
     __tablename__ = table_name
-    mart_id = Column(Integer, primary_key=True, index=True)
+    unique_id = Column(Integer, primary_key=True, index=True)
     regist_date = Column(String(255), index=True)
     location_code = Column(Float, index=True)
     location_name = Column(String(255), index=True)
