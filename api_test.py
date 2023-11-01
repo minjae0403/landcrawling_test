@@ -80,3 +80,7 @@ if response.status_code == 200:
 
 else:
     print(response.status_code)
+
+
+# 전반적 문제 = api가 1000개씩 요청이 되는 상황이라서 시간이 오래 걸린다.
+# 이거를 타개하기 위해서는 처음에 시간을 들여서 DW를 구축하고 매일 1회 업데이트 하는 방향으로 가야한다.
