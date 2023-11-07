@@ -1,6 +1,9 @@
 import requests, json, time
 import pandas as pd
 from datetime import datetime
+import multiprocessing as mp
+
+print(mp.cpu_count())
 
 current_date = datetime.now().date()
 
@@ -66,7 +69,7 @@ if response.status_code == 200:
         #     print('========')
         # 방법 2 : list로 이루어진 dict을 바로 dataframe으로 변경
         new_df_data = pd.DataFrame(result_data_list)
-        # print(df_data)
+        print(new_df_data)
         df_data = pd.concat((df_data,new_df_data), ignore_index=True)
 
         end_time = time.time()
@@ -84,3 +87,5 @@ else:
 
 # 전반적 문제 = api가 1000개씩 요청이 되는 상황이라서 시간이 오래 걸린다.
 # 이거를 타개하기 위해서는 처음에 시간을 들여서 DW를 구축하고 매일 1회 업데이트 하는 방향으로 가야한다.
+# 그리고 전날에 업데이트 된 정보 이후만 불러와서 진행하는 방식으로 코드를 짜야한다.
+# 1000 개당 약 31초 -> 5585번 반복 = 2793분 = 하루상 걸린다....
