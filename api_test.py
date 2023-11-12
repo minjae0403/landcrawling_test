@@ -29,6 +29,14 @@ total_start_time = time.time()
 
 # data 담을 Dataframe를 정의
 df_data = pd.DataFrame()
+data_list = []
+try:
+    df_before = pd.read_csv(f'서울_부동산_데이터.csv')
+    length = len(df_before)
+    df_data = pd.concat((df_data,df_before), ignore_index=True)
+
+except:
+    length = 0
 
 # url 연결 test
 url = f'http://openapi.seoul.go.kr:8088/{api_option.KEY}/json/{api_option.SERVICE}/{api_option.START_INDEX}/{api_option.END_INDEX}/'
@@ -45,19 +53,27 @@ if response.status_code == 200:
     repetitions = (list_total_count//1000)+1
     # print(f'반복횟수 : {repetitions}')
 
+    # 시작 위치
+    start_repitions = (length//1000)
+
     # 반복으로 dataframe에 합치기
-    for num in range(0,int(repetitions)):
+    for num in range(int(start_repitions),int(repetitions)):
         start_time = time.time()
         print(f'index 범위 : {num*1000+1} ~ {(num+1)*1000}')
         start_index = num*1000+1
         end_index = (num+1)*1000
+        end_time = time.time()
+        print(f"index 정의: {end_time - start_time:.5f} sec")
         
+        start_time = time.time()
         url = f'http://openapi.seoul.go.kr:8088/{api_option.KEY}/json/{api_option.SERVICE}/{start_index}/{end_index}/'
         response = requests.get(url)
         json_data = json.loads(response.text)
-
+        end_time = time.time()
+        print(f"url 요청: {end_time - start_time:.5f} sec")
         # print(json_data)
 
+        start_time = time.time()
         result_data_list = json_data['tbLnOpendataRentV']['row']
         # print(result_data_list)
         # 방법 1 : 한줄씩 반복문으로 df로 바꿔서 합친다. -> 반복문으로 시간이 오래 걸린다.
@@ -69,14 +85,12 @@ if response.status_code == 200:
         #     print('========')
         # 방법 2 : list로 이루어진 dict을 바로 dataframe으로 변경
         new_df_data = pd.DataFrame(result_data_list)
-        print(new_df_data)
+        # print(new_df_data)
         df_data = pd.concat((df_data,new_df_data), ignore_index=True)
+        df_data.to_csv(f'서울_부동산_데이터.csv', index=False)
 
         end_time = time.time()
-        print(f"1000개 저장 : {end_time - start_time:.5f} sec")
-        # print(df_data)
-
-    df_data.to_csv(f'서울_부동산_데이터_{current_date}.csv', index=False)
+        print(f"data 저장 : {end_time - start_time:.5f} sec")
 
     total_end_time = time.time()
     print(f"{total_end_time - total_start_time:.5f} sec")
@@ -86,6 +100,7 @@ else:
 
 
 # 전반적 문제 = api가 1000개씩 요청이 되는 상황이라서 시간이 오래 걸린다.
+# 1000 개당 약 31초 -> 5585번 반복 = 2793분 = 하루상 걸린다....
 # 이거를 타개하기 위해서는 처음에 시간을 들여서 DW를 구축하고 매일 1회 업데이트 하는 방향으로 가야한다.
 # 그리고 전날에 업데이트 된 정보 이후만 불러와서 진행하는 방식으로 코드를 짜야한다.
-# 1000 개당 약 31초 -> 5585번 반복 = 2793분 = 하루상 걸린다....
+# 데이터와 별개로 api요청 전에 이전에 어디까지 요청을 했는지 파일을 불러오고, 끝나면 현재 몇번까지 불렀었는지 저장하게 하기
